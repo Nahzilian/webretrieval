@@ -51,9 +51,10 @@ while(True):
     if inp == "ZZEND" or inp =='exit' or inp == 'quit':
         break
     elif inp == "search":
-        term = input("Search here : ")
-        print("\033[1;32;40m ================= Loading ================= \033[0;0m")
-        list_docs(search(term,is_stem,is_stopwords),load_file("posting.json"))
+        while (True):
+            term = input("Search here : ")
+            print("\033[1;32;40m ================= Loading ================= \033[0;0m")
+            list_docs(search(term,is_stem,is_stopwords),load_file("posting.json"))
     elif inp == "setting":
         print("Type number to toggle between mode")
         print("1. Stemming: {}".format(is_stem))
