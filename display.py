@@ -52,7 +52,7 @@ while(True):
         break
     elif inp == "search":
         while (True):
-            term = input("Search here : ")
+            term = input(">>> Search here : ")
             print("\033[1;32;40m ================= Loading ================= \033[0;0m")
             list_docs(search(term,is_stem,is_stopwords),load_file("posting.json"))
     elif inp == "setting":
@@ -61,7 +61,7 @@ while(True):
         print("2. Stop word removal: {}".format(is_stopwords))
         print("To get back, type 'back'.")
         while (True):
-            option = input("Toggle >>> ")    
+            option = input(">>> ")    
             if option == "1":
                 is_stem = not is_stem
                 print("success")
