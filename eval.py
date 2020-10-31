@@ -11,11 +11,15 @@ the mean average precision (MAP) and R-Precision values. The final output will b
 
 stop_words = get_file_data("common_words"," ")[0].split(" ")
 
-def eval_map():
-    a = 1
+def eval_map(docs,queries):
+    precision = 0
+    return precision
 
-def eval_r_precision():
-    a = 1
+def eval_r_precision(docs,rel_docs):
+    rels = [x for x in rel_docs]
+    retrieved = [docs[x]["id"] for x in docs]
+    rel_rev_intersection = [x for x in rels if x in retrieved]
+    return len(rel_rev_intersection)/len(retrieved)
 
 def split_query_text(is_stem,is_stopword):
     query_text = get_file_data("query.text",".I")
@@ -44,7 +48,10 @@ def split_query_a():
     return evaluation_data
 
 
-def eval(is_stem,is_stopword):
+def eval(retrieved_docs,is_stem,is_stopword):
     rel_docs = split_query_a()
     queries = split_query_text(is_stem,is_stopword)
+    
+    r_precision = eval_r_precision(retrieved_docs,rel_docs)
+    map_precision = eval_map(retrieved_docs,queries)
     

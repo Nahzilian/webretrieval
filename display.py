@@ -6,7 +6,14 @@ from colorama import init, AnsiToWin32
 import sys
 init(wrap=False)
 stream = AnsiToWin32(sys.stderr).stream
+import sys
+import time
 
+def spinning_cursor():
+    while True:
+        for cursor in '|/-\\':
+            yield cursor
+spinner = spinning_cursor()
 def clear(): 
     if name == 'nt': 
         _ = system('cls') 
@@ -40,13 +47,14 @@ def load_file(filename):
 clear()
 
 while(True):
-    print("\033[1;32;40m ================================== \033[0;0m", file = stream)
-    print("\033[1;32;40m Simple search engine \033[0;0m", file = stream)
-    print("\033[1;32;40m 1, To search, type 'search' below and the query for searching documents \033[0;0m", file = stream)
-    print("\033[1;32;40m 2, To quit: type 'ZZEND' or 'exit' or 'quit' \033[0;0m", file = stream)
-    print("\033[1;32;40m 3, To clear screen, type 'cls' or 'clear' \033[0;0m", file = stream)
-    print("\033[1;32;40m 4, To change setting, type 'setting' \033[0;0m", file = stream)
-    print("\033[1;32;40m ================================== \033[0;0m", file = stream)
+    print("\033[1;32;40m ====================================================================================================== \033[0;0m", file = stream)
+    print("\033[1;32;40m | Simple search engine                                                                               |\033[0;0m", file = stream)
+    print("\033[1;32;40m | 1, To search, type 'search' below and the query for searching documents                            |\033[0;0m", file = stream)
+    print("\033[1;32;40m | 2, To quit: type 'ZZEND' or 'exit' or 'quit'                                                       |\033[0;0m", file = stream)
+    print("\033[1;32;40m | 3, To clear screen, type 'cls' or 'clear'                                                          |\033[0;0m", file = stream)
+    print("\033[1;32;40m | 4, To change setting, type 'setting'                                                               |\033[0;0m", file = stream)
+    print("\033[1;32;40m | 5, To see sample of evaluation (R-Precision and Mean Average Precision), type 'eval'               |\033[0;0m", file = stream)
+    print("\033[1;32;40m ====================================================================================================== \033[0;0m", file = stream)
     inp = input(">>> ")
     if inp == "ZZEND" or inp =='exit' or inp == 'quit':
         break
@@ -74,7 +82,9 @@ while(True):
                 print("Invalid command")
             main(is_stem,is_stopwords)
         print("Saved setting")
-            
+    elif inp == "eval":
+        print("\033[1;32;40m === List of queries and evaluation === \033[0;0m", file = stream)
+        print("List of queries and data")
     elif inp == "cls" or inp == "clear":
         clear()
     else:
