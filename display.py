@@ -35,6 +35,11 @@ def list_docs(docid_list,docs):
             print(temp_call["author"])
     print("\033[1;32;40mFound: {}\033[0;0m".format(len(docid_list)), file = stream)
 
+for _ in range(20):
+    sys.stdout.write(next(spinner))
+    sys.stdout.flush()
+    time.sleep(0.1)
+    sys.stdout.write('\b')
 
 clear()
 is_stem = True
@@ -60,7 +65,9 @@ while(True):
         break
     elif inp == "search":
         while (True):
+            print("\033[1;32;40m Type 'ss' to stop searching \033[0;0m")
             term = input(">>> Search here : ")
+            
             print("\033[1;32;40m ================= Loading ================= \033[0;0m")
             list_docs(search(term,is_stem,is_stopwords),load_file("posting.json"))
     elif inp == "setting":
@@ -84,7 +91,6 @@ while(True):
         print("Saved setting")
     elif inp == "eval":
         print("\033[1;32;40m === List of queries and evaluation === \033[0;0m", file = stream)
-        print("List of queries and data")
     elif inp == "cls" or inp == "clear":
         clear()
     else:
