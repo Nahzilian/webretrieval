@@ -79,25 +79,31 @@ while(True):
         print("To get back, type 'back'.")
         while (True):
             option = input(">>> ")    
-            if option == "1":
-                is_stem = not is_stem
-                print("success")
-            elif option == "2":
-                is_stopwords = not is_stopwords
+            if option == "1" or option == "2":
+                if option == "1":
+                    is_stem = not is_stem
+                elif option == "2":
+                    is_stopwords = not is_stopwords
+                main(is_stem,is_stopwords)
                 print("success")
             elif option == "back":
                 break
             else:
-                print("Invalid command")
-            main(is_stem,is_stopwords)
+                print("\033[31m === Invalid command === ", file = stream)
         print("Saved setting")
+        for _ in range(20):
+            sys.stdout.write(next(spinner))
+            sys.stdout.flush()
+            time.sleep(0.1)
+            sys.stdout.write('\b')
+        clear()
     elif inp == "eval":
         print("\033[1;32;40m === List of queries and evaluation === \033[0;0m", file = stream)
         eval(is_stem,is_stopwords)
     elif inp == "cls" or inp == "clear":
         clear()
     else:
-        print("Invalid command")
+        print("\033[31m === Invalid command === ", file = stream)
 
 print("\033[1;32;40m ............ Ending ............ \033[0;0m", file = stream)
 print("\033[1;32;40m ================================== \033[0;0m", file = stream)
