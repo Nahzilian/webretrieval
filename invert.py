@@ -154,4 +154,4 @@ def main(is_stem,is_stopword):
   data = get_file_data("cacm.all", ".I")
   format_posting_list(data,is_stem,is_stopword)
 
-main(True,True)
+#main(True,True)

@@ -34,11 +34,9 @@ def doc_ranking(docs_id,data,query_words):
     rel_collection = []
     words_pool = []
     temp_wp = []
-    
+    ranking = []
     for key in docs_id:
-        temp_wp += [x for x in data[key]["details_title"]]
-        temp_wp += [x for x in data[key]["details_abstract"]]
-    #bool(re.search(r'\d', inputString))
+        temp_wp += [x for x in data[key]["words_pool"]]
     words = [x for x in temp_wp if not bool(re.search(r'\d', x))]
     words_pool = [x for x in words if x in word_dict]
     words_pool += query_words
@@ -46,15 +44,10 @@ def doc_ranking(docs_id,data,query_words):
     for key in docs_id:
         temp_dict = dict()
         temp_dict["id"] = key
-        word_list = dict()
+        temp_dict["word_list"] = data[key]["word_count"]
         for word in words_pool:
-            count = 0
-            if word in data[key]["details_title"]:
-                count += data[key]["details_title"][word][0]
-            if word in data[key]["details_abstract"]:
-                count += data[key]["details_abstract"][word][0]
-            word_list[word] = count    
-        temp_dict["word_list"] = word_list
+            if not word in temp_dict["word_list"]:
+                temp_dict["word_list"][word] = 0 
         rel_collection.append(temp_dict)
     #Here
     # Word list counted
@@ -62,18 +55,15 @@ def doc_ranking(docs_id,data,query_words):
     # Calculating the weight of the term
     for item in rel_collection:
         for key in idf:
-            if not item["word_list"][key] == 0:
+            if not item["word_list"][key] <= 0:
                 item["word_list"][key] = idf[key] * (1 + math.log(item["word_list"][key],10))
-    ranking = []
     query = query_vector(query_words,idf,words_pool)
     for item in rel_collection:
-
         item_data = dict()
         item_data["id"] = item["id"]
         item_data["cosine_sim"] = cosine_similarity(query,item["word_list"])
         ranking.append(item_data)
     return sorted(ranking, key = lambda i: i['cosine_sim'],reverse = True)
-
 
 def query_vector(query_words,idf_collection,words_pool):
     result = dict()

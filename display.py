@@ -65,9 +65,11 @@ while(True):
         break
     elif inp == "search":
         while (True):
-            print("\033[1;32;40m Type 'ss' to stop searching \033[0;0m")
+            print("\033[1;32;40m Type 'ss_end' to stop searching \033[0;0m")
             term = input(">>> Search here : ")
-            
+            if term == "ss_end":
+                clear()
+                break
             print("\033[1;32;40m ================= Loading ================= \033[0;0m")
             list_docs(search(term,is_stem,is_stopwords),load_file("posting.json"))
     elif inp == "setting":
