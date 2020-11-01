@@ -10,6 +10,7 @@ def load_file(filename):
 ps = PorterStemmer()
 doc_list = load_file("posting.json")
 word_dict = load_file("dictionary.json")
+lookup_dict = load_file("lookup.json")
 
 stop_words = get_file_data("common_words"," ")[0].split(" ")
 def query_filtering(query,is_stem,is_stopwords):
@@ -23,26 +24,19 @@ def query_filtering(query,is_stem,is_stopwords):
     return list(filter(None,query_words))
 
 
-def relavance_doc_retrieval(data,query_words,is_stem,is_stopwords):
+def relavance_doc_retrieval(query_words):
     relavance_doc = []
-    for key in data:
-        for word in query_words:
-            temp_words_pool = [x for x in data[key]["words_pool"] if x not in stop_words] if is_stopwords else data[key]["words_pool"]
-            if is_stem:
-                temp_words_pool = [ps.stem(x) for x in data[key]["words_pool"] if x not in stop_words] if is_stopwords else [ps.stem(x) for x in data[key]["words_pool"]]
-            if word in temp_words_pool:
-                relavance_doc.append(key)
-    return relavance_doc
+    for word in query_words:
+        relavance_doc += lookup_dict[word] if word in lookup_dict else []
+    return sorted(set(relavance_doc))
 
 def doc_ranking(docs_id,data,query_words):
     rel_collection = []
     words_pool = []
     temp_wp = []
-    
+    ranking = []
     for key in docs_id:
-        temp_wp += [x for x in data[key]["details_title"]]
-        temp_wp += [x for x in data[key]["details_abstract"]]
-    #bool(re.search(r'\d', inputString))
+        temp_wp += [x for x in data[key]["words_pool"]]
     words = [x for x in temp_wp if not bool(re.search(r'\d', x))]
     words_pool = [x for x in words if x in word_dict]
     words_pool += query_words
@@ -50,15 +44,10 @@ def doc_ranking(docs_id,data,query_words):
     for key in docs_id:
         temp_dict = dict()
         temp_dict["id"] = key
-        word_list = dict()
+        temp_dict["word_list"] = data[key]["word_count"]
         for word in words_pool:
-            count = 0
-            if word in data[key]["details_title"]:
-                count += data[key]["details_title"][word][0]
-            if word in data[key]["details_abstract"]:
-                count += data[key]["details_abstract"][word][0]
-            word_list[word] = count    
-        temp_dict["word_list"] = word_list
+            if not word in temp_dict["word_list"]:
+                temp_dict["word_list"][word] = 0 
         rel_collection.append(temp_dict)
     #Here
     # Word list counted
@@ -66,18 +55,15 @@ def doc_ranking(docs_id,data,query_words):
     # Calculating the weight of the term
     for item in rel_collection:
         for key in idf:
-            if not item["word_list"][key] == 0:
+            if not item["word_list"][key] <= 0:
                 item["word_list"][key] = idf[key] * (1 + math.log(item["word_list"][key],10))
-    ranking = []
     query = query_vector(query_words,idf,words_pool)
     for item in rel_collection:
-
         item_data = dict()
         item_data["id"] = item["id"]
         item_data["cosine_sim"] = cosine_similarity(query,item["word_list"])
         ranking.append(item_data)
     return sorted(ranking, key = lambda i: i['cosine_sim'],reverse = True)
-
 
 def query_vector(query_words,idf_collection,words_pool):
     result = dict()
@@ -135,7 +121,7 @@ def search(query,is_stem,is_stopwords):
     temp_query = [x for x in query.split(" ") if not x == '']
     if len(temp_query) > 1:
         query_words = query_filtering(temp_query,is_stem,is_stopwords)
-        doc_id = relavance_doc_retrieval(doc_list,query_words,True,True)
+        doc_id = relavance_doc_retrieval(query_words)
         return doc_ranking(sorted(set(doc_id)),doc_list,query_words)
     else:
         return single_term_dict(temp_query[0],doc_list,is_stem,is_stopwords)
