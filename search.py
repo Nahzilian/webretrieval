@@ -10,6 +10,7 @@ def load_file(filename):
 ps = PorterStemmer()
 doc_list = load_file("posting.json")
 word_dict = load_file("dictionary.json")
+lookup_dict = load_file("lookup.json")
 
 stop_words = get_file_data("common_words"," ")[0].split(" ")
 def query_filtering(query,is_stem,is_stopwords):
@@ -23,16 +24,11 @@ def query_filtering(query,is_stem,is_stopwords):
     return list(filter(None,query_words))
 
 
-def relavance_doc_retrieval(data,query_words,is_stem,is_stopwords):
+def relavance_doc_retrieval(query_words):
     relavance_doc = []
-    for key in data:
-        for word in query_words:
-            temp_words_pool = [x for x in data[key]["words_pool"] if x not in stop_words] if is_stopwords else data[key]["words_pool"]
-            if is_stem:
-                temp_words_pool = [ps.stem(x) for x in data[key]["words_pool"] if x not in stop_words] if is_stopwords else [ps.stem(x) for x in data[key]["words_pool"]]
-            if word in temp_words_pool:
-                relavance_doc.append(key)
-    return relavance_doc
+    for word in query_words:
+        relavance_doc += lookup_dict[word] if word in lookup_dict else []
+    return sorted(set(relavance_doc))
 
 def doc_ranking(docs_id,data,query_words):
     rel_collection = []
@@ -135,7 +131,7 @@ def search(query,is_stem,is_stopwords):
     temp_query = [x for x in query.split(" ") if not x == '']
     if len(temp_query) > 1:
         query_words = query_filtering(temp_query,is_stem,is_stopwords)
-        doc_id = relavance_doc_retrieval(doc_list,query_words,True,True)
+        doc_id = relavance_doc_retrieval(query_words)
         return doc_ranking(sorted(set(doc_id)),doc_list,query_words)
     else:
         return single_term_dict(temp_query[0],doc_list,is_stem,is_stopwords)

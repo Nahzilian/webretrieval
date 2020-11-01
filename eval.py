@@ -23,16 +23,20 @@ def eval_map(docs,rel_docs):
     rel_rev_intersect = [x for x in rels if x in retrieved]
     precision = []
     count = 0
-    for doc_index in range(len(retrieved)):
-        if retrieved[doc_index] in rel_rev_intersect:
-            count += 1
-            precision.append(count/doc_index)
-    return sum(precision)/len(rels)
+    if not len(retrieved) == 0:
+        for doc_index in range(len(retrieved)):
+            if retrieved[doc_index] in rel_rev_intersect:
+                count += 1
+                precision.append(count/(doc_index + 1))
+        return sum(precision)/len(rels)
+    return 0
 
 def eval_r_precision(docs,rel_docs):
     rels = [x for x in rel_docs]
     retrieved = [x["id"] for x in docs]
     rel_rev_intersection = [x for x in rels if x in retrieved]
+    if len(retrieved) == 0:
+        return 0
     return len(rel_rev_intersection)/len(retrieved)
 
 def split_query_text(is_stem,is_stopword):
