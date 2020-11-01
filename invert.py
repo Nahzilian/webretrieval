@@ -54,24 +54,29 @@ def data_cleaner(data, is_stem, is_stopword):
     no_num = [x for x in lowered if not bool(re.search(r'\d', x))]
     return [x for x in no_num if x not in common_words] if is_stopword else no_num
 
+# Generate a separate dictionary for faster search
 
 def dictionary_maker(data, is_stem, is_stopword,data_input):
   raw_words = data_cleaner(data_input, is_stem, is_stopword)
   word_list = sorted(set(raw_words))
-  #print(raw_words, file=stream)
-  #data.sort()
-  dictionary = dict()
+  lookup_dict, dictionary = dict(), dict()
   for term in word_list:
     for key in data:
-      if term in (data[key]["details_title"] or data[key]["details_abstract"]):
+      if term in data[key]["words_pool"]:
         word_counter = dictionary[term] + 1 if term in dictionary else 1
         dictionary[term] = word_counter
+        if term in lookup_dict:
+          if not key in lookup_dict[term]:
+            lookup_dict[term].append(key)
+        else:
+            lookup_dict[term] = [key]
   print("\033[1;32;40m.... Writing to file: dictionary ....\033[0;0m", file=stream)
   write_to_file("dictionary.json", dictionary)
+  print("\033[1;32;40m.... Writing to file: lookup_dict ....\033[0;0m", file=stream)
+  write_to_file("lookup.json", lookup_dict)
 
 def posting_list(data_input):
   data = section_removal(data_input)
-  #print(data, file=stream)
   all_dict = dict()
   for index in data:
     temp_dict = dict()
@@ -97,15 +102,18 @@ def format_posting_list(data_input,is_stem,is_stopword):
     title = list(filter(None, [ x.lower() for x in re.sub(r'\W+', ' ',data[key]["title"]).split(" ") if not x.isnumeric()])) if "title" in data[key] else []
     abstract = list(filter(None,[ x.lower() for x in re.sub(r'\W+', ' ',data[key]["abstract"]).split(" ") if not x.isnumeric()])) if "abstract" in data[key] else []
     words_pool= sorted(set(list(filter(None,(" ".join(title) + " " + " ".join(abstract)).split(" ")))))
-    data[key]["words_pool"] = words_pool
     temp_title = []
     temp_abstract = []
+    temp_word_pools = []
     if is_stem:
       temp_title = [ps.stem(x) for x in title if x not in stop_words] if is_stopword else [ps.stem(x) for x in title]
       temp_abstract = [ps.stem(x) for x in abstract if x not in stop_words] if is_stopword else [ps.stem(x) for x in abstract]
+      temp_word_pools = [ps.stem(x) for x in words_pool if x not in stop_words] if is_stopword else [ps.stem(x) for x in words_pool]
     else:
       temp_title = title if not is_stopword else [x for x in title if x not in stop_words]
       temp_abstract = abstract if not is_stopword else [x for x in abstract if x not in stop_words]
+      temp_word_pools = words_pool if not is_stopword else [x for x in words_pool if x not in stop_words]
+    data[key]["words_pool"] = temp_word_pools
     data_title_dict = dict()
     data_abstract_dict = dict()
     unique_title = []
@@ -126,6 +134,15 @@ def format_posting_list(data_input,is_stem,is_stopword):
       data_abstract_dict[i] = [temp_abstract.count(i),indices]
     data[key]["details_title"] = data_title_dict
     data[key]["details_abstract"] = data_abstract_dict
+    temp_count = dict()
+    for word in temp_word_pools:
+      count = 0
+      if word in data_abstract_dict:
+        count += data_abstract_dict[word][0]
+      if word in data_title_dict:
+        count += data_title_dict[word][0]
+      temp_count[word] = count
+    data[key]["word_count"] = temp_count
   print("\033[1;32;40m.... Writing to list: Posting ....\033[0;0m", file=stream)
   dictionary_maker(data,is_stem,is_stopword,data_input)
   write_to_file("posting.json",data)
@@ -136,3 +153,5 @@ def main(is_stem,is_stopword):
   print("\033[1;32;40m.... Extracting file ....\033[0;0m", file=stream)
   data = get_file_data("cacm.all", ".I")
   format_posting_list(data,is_stem,is_stopword)
+
+main(True,True)

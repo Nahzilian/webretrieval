@@ -1,0 +1,151 @@
+{
+    "id": "39",
+    "title": "The Secant Method for Simultaneous Nonlinear Equations",
+    "abstract": "A procedure for the simultaneous solution of a system of not-necessarily-linear equations,  a generalization of the secant method for a single function of one variable, is given.",
+    "date": "CACM December, 1959",
+    "authors": "Wolfe, P.",
+    "words_pool": [
+        "equat",
+        "function",
+        "gener",
+        "linear",
+        "method",
+        "necessarili",
+        "nonlinear",
+        "procedur",
+        "secant",
+        "simultan",
+        "singl",
+        "solut",
+        "system",
+        "variabl"
+    ],
+    "details_title": {
+        "equat": [
+            1,
+            [
+                4
+            ]
+        ],
+        "method": [
+            1,
+            [
+                1
+            ]
+        ],
+        "nonlinear": [
+            1,
+            [
+                3
+            ]
+        ],
+        "secant": [
+            1,
+            [
+                0
+            ]
+        ],
+        "simultan": [
+            1,
+            [
+                2
+            ]
+        ]
+    },
+    "details_abstract": {
+        "equat": [
+            1,
+            [
+                6
+            ]
+        ],
+        "function": [
+            1,
+            [
+                11
+            ]
+        ],
+        "gener": [
+            1,
+            [
+                7
+            ]
+        ],
+        "linear": [
+            1,
+            [
+                5
+            ]
+        ],
+        "method": [
+            1,
+            [
+                9
+            ]
+        ],
+        "necessarili": [
+            1,
+            [
+                4
+            ]
+        ],
+        "procedur": [
+            1,
+            [
+                0
+            ]
+        ],
+        "secant": [
+            1,
+            [
+                8
+            ]
+        ],
+        "simultan": [
+            1,
+            [
+                1
+            ]
+        ],
+        "singl": [
+            1,
+            [
+                10
+            ]
+        ],
+        "solut": [
+            1,
+            [
+                2
+            ]
+        ],
+        "system": [
+            1,
+            [
+                3
+            ]
+        ],
+        "variabl": [
+            1,
+            [
+                12
+            ]
+        ]
+    },
+    "word_count": {
+        "equat": 2,
+        "function": 1,
+        "gener": 1,
+        "linear": 1,
+        "method": 2,
+        "necessarili": 1,
+        "nonlinear": 1,
+        "procedur": 1,
+        "secant": 2,
+        "simultan": 2,
+        "singl": 1,
+        "solut": 1,
+        "system": 1,
+        "variabl": 1
+    }
+}

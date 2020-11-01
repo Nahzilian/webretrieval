@@ -74,3 +74,5 @@ def eval(is_stem,is_stopword):
         print("\033[1;32;40m === List of queries and evaluation === \033[0;0m", file = stream)
         print("R-Precision :\t\t{}".format(r_precision))
         print("Mean average precision :\t{}".format(map_precision))
+
+eval(True,True)
