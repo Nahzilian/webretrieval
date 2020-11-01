@@ -1,12 +1,12 @@
 from invert import main, get_file_data
 from search import search
+from eval import eval
 from os import system, name 
 import json
 from colorama import init, AnsiToWin32
 import sys
 init(wrap=False)
 stream = AnsiToWin32(sys.stderr).stream
-import sys
 import time
 
 def spinning_cursor():
@@ -91,6 +91,7 @@ while(True):
         print("Saved setting")
     elif inp == "eval":
         print("\033[1;32;40m === List of queries and evaluation === \033[0;0m", file = stream)
+        eval(is_stem,is_stopwords)
     elif inp == "cls" or inp == "clear":
         clear()
     else:

@@ -4,24 +4,22 @@ from invert import get_file_data
 import re
 import math
 
-ps = PorterStemmer()
-
 def load_file(filename):
   return json.loads(open(filename, "r").read())  
 
-# Find all relavance docs
-# Get all term frequency
-# Calculate the term weight based on the doc
-# Calculate the inverted document frequency of all docs
-# Calculate the term weight
-# Do cosine similarity
+ps = PorterStemmer()
+doc_list = load_file("posting.json")
+word_dict = load_file("dictionary.json")
+
 stop_words = get_file_data("common_words"," ")[0].split(" ")
 def query_filtering(query,is_stem,is_stopwords):
-    query_words = [x.lower() for x in query.split(" ")]
+    temp_query_words = [re.sub('[^A-Za-z0-9]+', '', x) for x in query]
+    query_words = [x.lower() for x in temp_query_words if not x == '']
     if is_stem:
         query_words = [ps.stem(x) for x in query_words if x not in stop_words] if is_stopwords else [ps.stem(x) for x in query_words]
     else:
         query_words = [x for x in query_words if x not in stop_words] if is_stopwords else query_words
+    query_words = [x for x in query_words if x in word_dict]
     return list(filter(None,query_words))
 
 
@@ -40,7 +38,7 @@ def doc_ranking(docs_id,data,query_words):
     rel_collection = []
     words_pool = []
     temp_wp = []
-    word_dict = load_file("dictionary.json")
+    
     for key in docs_id:
         temp_wp += [x for x in data[key]["details_title"]]
         temp_wp += [x for x in data[key]["details_abstract"]]
@@ -135,9 +133,8 @@ def single_term_dict(query,docs,is_stem,is_stopwords):
 
 def search(query,is_stem,is_stopwords):
     temp_query = [x for x in query.split(" ") if not x == '']
-    doc_list = load_file("posting.json")
     if len(temp_query) > 1:
-        query_words = query_filtering(query,is_stem,is_stopwords)
+        query_words = query_filtering(temp_query,is_stem,is_stopwords)
         doc_id = relavance_doc_retrieval(doc_list,query_words,True,True)
         return doc_ranking(sorted(set(doc_id)),doc_list,query_words)
     else:

@@ -100,12 +100,6 @@ def format_posting_list(data_input,is_stem,is_stopword):
     data[key]["words_pool"] = words_pool
     temp_title = []
     temp_abstract = []
-    # if is_stopword:
-    #   temp_title = [x for x in title if x not in stop_words] if not is_stem else [ps.stem(x) for x in title if x not in stop_words]
-    #   temp_abstract = [x for x in abstract if x not in stop_words] if not is_stem else [ps.stem(x) for x in abstract if x not in stop_words]
-    # else:
-    #   temp_title = title if not is_stem else [ps.stem(x) for x in title]
-    #   temp_abstract = abstract if not is_stem else [ps.stem(x) for x in abstract]
     if is_stem:
       temp_title = [ps.stem(x) for x in title if x not in stop_words] if is_stopword else [ps.stem(x) for x in title]
       temp_abstract = [ps.stem(x) for x in abstract if x not in stop_words] if is_stopword else [ps.stem(x) for x in abstract]
@@ -142,5 +136,3 @@ def main(is_stem,is_stopword):
   print("\033[1;32;40m.... Extracting file ....\033[0;0m", file=stream)
   data = get_file_data("cacm.all", ".I")
   format_posting_list(data,is_stem,is_stopword)
-
-#main(True,True)
