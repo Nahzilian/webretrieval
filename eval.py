@@ -81,3 +81,4 @@ def eval(is_stem,is_stopword):
     print("Average R-Precision :\t\t\t{}".format(r_precision_sum/len(queries)))
     print("Average Mean average precision :\t{}".format(map_precision_sum/len(queries)))
     print("\033[1;32;40m =============================== \033[0;0m", file = stream)
+#eval(True,True)

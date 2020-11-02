@@ -21,8 +21,7 @@ def query_filtering(query,is_stem,is_stopwords):
     else:
         query_words = [x for x in query_words if x not in stop_words] if is_stopwords else query_words
     query_words = [x for x in query_words if x in word_dict]
-    return list(filter(None,query_words))
-
+    return query_words
 def relavance_doc_retrieval(query_words):
     result, relavance_doc = [], []
     for word in query_words:
@@ -36,7 +35,7 @@ def relavance_doc_retrieval(query_words):
         result += temp_data
     return sorted(set(result))
 
-def doc_ranking(docs_id,data,query_words):
+def doc_ranking(docs_id,data,query_words,original_query):
     rel_collection = []
     words_pool = []
     temp_wp = []
@@ -44,6 +43,7 @@ def doc_ranking(docs_id,data,query_words):
     for key in docs_id:
         temp_wp += [x for x in data[key]["words_pool"]]
     words_pool = [x for x in temp_wp if x in word_dict]
+    words_pool += query_words
     words_pool = sorted(set(words_pool))
     for key in docs_id:
         temp_dict = dict()
@@ -58,7 +58,7 @@ def doc_ranking(docs_id,data,query_words):
         for key in idf:
             if not item["word_list"][key] <= 0:
                 item["word_list"][key] = idf[key] * (1 + math.log(item["word_list"][key],10))
-    query = query_vector(query_words,idf,words_pool)
+    query = query_vector(original_query,idf,words_pool)
     for item in rel_collection:
         item_data = dict()
         item_data["id"] = item["id"]
@@ -68,9 +68,8 @@ def doc_ranking(docs_id,data,query_words):
 
 def query_vector(query_words,idf_collection,words_pool):
     result = dict()
-    unique_list = sorted(set(query_words))
     for word in words_pool:
-        result[word] = unique_list.count(word)
+        result[word] = query_words.count(word)
     for word in idf_collection:
         if not result[word] == 0:
             result[word] = 1 + math.log(result[word],10)
@@ -117,9 +116,11 @@ def single_term_dict(query,docs,is_stem,is_stopwords):
 def search(query,is_stem,is_stopwords):
     temp_query = [x for x in query.split(" ") if not x == '']
     if len(temp_query) > 1:
-        query_words = sorted(set(query_filtering(temp_query,is_stem,is_stopwords)))
+        unfiltered = query_filtering(temp_query,is_stem,is_stopwords)
+        print(unfiltered)
+        query_words = sorted(set(unfiltered))
         doc_id = relavance_doc_retrieval(query_words)
-        return doc_ranking(sorted(set(doc_id)),doc_list,query_words)
+        return doc_ranking(sorted(set(doc_id)),doc_list,query_words,unfiltered)
     else:
         return single_term_dict(temp_query[0],doc_list,is_stem,is_stopwords)
     
