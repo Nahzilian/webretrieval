@@ -64,6 +64,8 @@ def eval(is_stem,is_stopword):
     list_of_index = [x for x in rel_docs]
     queries = split_query_text(is_stem,is_stopword,list_of_index)
     count = 0
+    r_precision_sum = 0
+    map_precision_sum = 0
     for query in queries:
         temp_res = search(query["context"],is_stem,is_stopword)
         r_precision = eval_r_precision(temp_res,rel_docs[list_of_index[count]])
@@ -73,4 +75,10 @@ def eval(is_stem,is_stopword):
         print("\033[1;32;40m Query : \033[0;0m{}".format(query["context"]), file = stream)
         print("R-Precision :\t\t\t{}".format(r_precision))
         print("Mean average precision :\t{}".format(map_precision))
+        r_precision_sum += r_precision
+        map_precision_sum += map_precision
+    print("\033[1;32;40m =========== Summary =========== \033[0;0m", file = stream)
+    print("Average R-Precision :\t\t\t{}".format(r_precision_sum/len(queries)))
+    print("Average Mean average precision :\t{}".format(map_precision_sum/len(queries)))
+    print("\033[1;32;40m =============================== \033[0;0m", file = stream)
 eval(True,True)

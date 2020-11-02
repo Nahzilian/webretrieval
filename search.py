@@ -11,8 +11,8 @@ ps = PorterStemmer()
 doc_list = load_file("posting.json")
 word_dict = load_file("dictionary.json")
 lookup_dict = load_file("lookup.json")
-
 stop_words = get_file_data("common_words"," ")[0].split(" ")
+
 def query_filtering(query,is_stem,is_stopwords):
     temp_query_words = [re.sub('[^A-Za-z0-9]+', '', x) for x in query]
     query_words = [x.lower() for x in temp_query_words if not x == '']
@@ -29,6 +29,11 @@ def relavance_doc_retrieval(query_words):
         relavance_doc += lookup_dict[word] if word in lookup_dict else []
     temp = {i:relavance_doc.count(i) for i in relavance_doc}
     result = [x for x in temp if temp[x] > 1]
+    extra = [x for x in temp if temp[x] < 2]
+    if len(extra) > 0:
+        for word in query_words:
+            temp_data =  [doc for doc in extra if word in doc_list[doc]["word_count"] and doc_list[doc]["word_count"][word] > 1]
+        result += temp_data
     return sorted(set(result))
 
 def doc_ranking(docs_id,data,query_words):
@@ -38,9 +43,7 @@ def doc_ranking(docs_id,data,query_words):
     ranking = []
     for key in docs_id:
         temp_wp += [x for x in data[key]["words_pool"]]
-    words = [x for x in temp_wp if not bool(re.search(r'\d', x))]
-    words_pool = [x for x in words if x in word_dict]
-    words_pool += query_words
+    words_pool = [x for x in temp_wp if x in word_dict]
     words_pool = sorted(set(words_pool))
     for key in docs_id:
         temp_dict = dict()
@@ -69,18 +72,20 @@ def query_vector(query_words,idf_collection,words_pool):
     for word in words_pool:
         result[word] = unique_list.count(word)
     for word in idf_collection:
-        #result[word] = unique_list.count(word)
         if not result[word] == 0:
             result[word] = 1 + math.log(result[word],10)
         result[word] = result[word] * idf_collection[word]
     return result
-    
 
+# def doc_similarity(doc_id):
+#     for doc in doc_id:
+
+    
 # finding idf
 def inverse_doc_freq(collection_len,words_pool,word_dict): 
     idf = dict()
     for word in words_pool:
-        idf[word] = math.log(word_dict[word]/collection_len,10) if collection_len > 0 else 0
+        idf[word] = math.log(collection_len/word_dict[word],10) if collection_len > 0 else 0
     return idf
 
 def vector_length(vector):
