@@ -104,6 +104,12 @@ while(True):
         clear()
     else:
         print("\033[31m === Invalid command === ", file = stream)
+        for _ in range(10):
+            sys.stdout.write(next(spinner))
+            sys.stdout.flush()
+            time.sleep(0.1)
+            sys.stdout.write('\b')
+        clear()
 
 print("\033[1;32;40m ............ Ending ............ \033[0;0m", file = stream)
 print("\033[1;32;40m ================================== \033[0;0m", file = stream)

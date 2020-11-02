@@ -23,12 +23,15 @@ def query_filtering(query,is_stem,is_stopwords):
     query_words = [x for x in query_words if x in word_dict]
     return list(filter(None,query_words))
 
-
 def relavance_doc_retrieval(query_words):
     relavance_doc = []
+    result = []
     for word in query_words:
         relavance_doc += lookup_dict[word] if word in lookup_dict else []
-    return sorted(set(relavance_doc))
+    temp = {i:relavance_doc.count(i) for i in relavance_doc}
+    print(len(relavance_doc))
+    result = [x for x in temp if temp[x] > 1]
+    return sorted(set(result))
 
 def doc_ranking(docs_id,data,query_words):
     rel_collection = []
@@ -47,12 +50,9 @@ def doc_ranking(docs_id,data,query_words):
         temp_dict["word_list"] = data[key]["word_count"]
         for word in words_pool:
             if not word in temp_dict["word_list"]:
-                temp_dict["word_list"][word] = 0 
+                temp_dict["word_list"][word] = 0
         rel_collection.append(temp_dict)
-    #Here
-    # Word list counted
     idf = inverse_doc_freq(len(rel_collection),words_pool,word_dict)
-    # Calculating the weight of the term
     for item in rel_collection:
         for key in idf:
             if not item["word_list"][key] <= 0:
@@ -83,7 +83,6 @@ def inverse_doc_freq(collection_len,words_pool,word_dict):
     idf = dict()
     for word in words_pool:
         idf[word] = math.log(collection_len/word_dict[word],10)
-    #print(idf)
     return idf
 
 def vector_length(vector):
@@ -108,9 +107,8 @@ def single_term_dict(query,docs,is_stem,is_stopwords):
     r_query = ps.stem(query) if is_stopwords  else r_query
     retrieved_docs = []
     for index in docs:
-        tempTitle = [x for x in docs[index]["details_title"]] if "details_title" in docs[index] else []
-        tempAbstract = [x for x in docs[index]["details_abstract"]] if "details_abstract" in docs[index] else []
-        if query in tempTitle or query in tempAbstract:
+        temp_word_list = docs[index]["words_pool"]
+        if query in temp_word_list:
             temp_dict = dict()
             temp_dict["id"] = docs[index]["id"]
             retrieved_docs.append(temp_dict)
@@ -120,7 +118,7 @@ def single_term_dict(query,docs,is_stem,is_stopwords):
 def search(query,is_stem,is_stopwords):
     temp_query = [x for x in query.split(" ") if not x == '']
     if len(temp_query) > 1:
-        query_words = query_filtering(temp_query,is_stem,is_stopwords)
+        query_words = sorted(set(query_filtering(temp_query,is_stem,is_stopwords)))
         doc_id = relavance_doc_retrieval(query_words)
         return doc_ranking(sorted(set(doc_id)),doc_list,query_words)
     else:

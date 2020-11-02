@@ -132,8 +132,6 @@ def format_posting_list(data_input,is_stem,is_stopword):
     for i in unique_abstract:
       indices = [index for index, x in enumerate(temp_abstract) if x == i]
       data_abstract_dict[i] = [temp_abstract.count(i),indices]
-    data[key]["details_title"] = data_title_dict
-    data[key]["details_abstract"] = data_abstract_dict
     temp_count = dict()
     for word in temp_word_pools:
       count = 0
