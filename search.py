@@ -77,10 +77,6 @@ def query_vector(query_words,idf_collection,words_pool):
         result[word] = result[word] * idf_collection[word]
     return result
 
-# def doc_similarity(doc_id):
-#     for doc in doc_id:
-
-    
 # finding idf
 def inverse_doc_freq(collection_len,words_pool,word_dict): 
     idf = dict()
