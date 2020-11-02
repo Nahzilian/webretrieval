@@ -9,7 +9,7 @@ stream = AnsiToWin32(sys.stderr).stream
 stop_words = get_file_data("common_words"," ")[0].split(" ")
 
 def eval_map(docs,rel_docs):
-    rels = [x for x in rel_docs]
+    rels = [str(int(x)) for x in rel_docs]
     retrieved = [x["id"] for x in docs]
     rel_rev_intersect = [x for x in rels if x in retrieved]
     precision = []
@@ -23,7 +23,7 @@ def eval_map(docs,rel_docs):
     return 0
 
 def eval_r_precision(docs,rel_docs):
-    rels = [x for x in rel_docs]
+    rels = [str(int(x)) for x in rel_docs]
     retrieved = [x["id"] for x in docs]
     rel_rev_intersection = [x for x in rels if x in retrieved]
     if len(retrieved) == 0:
@@ -73,4 +73,4 @@ def eval(is_stem,is_stopword):
         print("\033[1;32;40m Query : \033[0;0m{}".format(query["context"]), file = stream)
         print("R-Precision :\t\t\t{}".format(r_precision))
         print("Mean average precision :\t{}".format(map_precision))
-#eval(True,True)
+eval(True,True)

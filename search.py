@@ -24,12 +24,10 @@ def query_filtering(query,is_stem,is_stopwords):
     return list(filter(None,query_words))
 
 def relavance_doc_retrieval(query_words):
-    relavance_doc = []
-    result = []
+    result, relavance_doc = [], []
     for word in query_words:
         relavance_doc += lookup_dict[word] if word in lookup_dict else []
     temp = {i:relavance_doc.count(i) for i in relavance_doc}
-    print(len(relavance_doc))
     result = [x for x in temp if temp[x] > 1]
     return sorted(set(result))
 
@@ -82,7 +80,7 @@ def query_vector(query_words,idf_collection,words_pool):
 def inverse_doc_freq(collection_len,words_pool,word_dict): 
     idf = dict()
     for word in words_pool:
-        idf[word] = math.log(collection_len/word_dict[word],10)
+        idf[word] = math.log(word_dict[word]/collection_len,10) if collection_len > 0 else 0
     return idf
 
 def vector_length(vector):
