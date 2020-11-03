@@ -98,12 +98,18 @@ while(True):
             sys.stdout.write('\b')
         clear()
     elif inp == "eval":
-        print("\033[1;32;40m === List of queries and evaluation === \033[0;0m", file = stream)
+        print("\033[1;32;40m ================= Loading ================= \033[0;0m")
         eval(is_stem,is_stopwords)
     elif inp == "cls" or inp == "clear":
         clear()
     else:
         print("\033[31m === Invalid command === ", file = stream)
+        for _ in range(10):
+            sys.stdout.write(next(spinner))
+            sys.stdout.flush()
+            time.sleep(0.1)
+            sys.stdout.write('\b')
+        clear()
 
 print("\033[1;32;40m ............ Ending ............ \033[0;0m", file = stream)
 print("\033[1;32;40m ================================== \033[0;0m", file = stream)

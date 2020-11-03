@@ -9,7 +9,7 @@ stream = AnsiToWin32(sys.stderr).stream
 stop_words = get_file_data("common_words"," ")[0].split(" ")
 
 def eval_map(docs,rel_docs):
-    rels = [x for x in rel_docs]
+    rels = [str(int(x)) for x in rel_docs]
     retrieved = [x["id"] for x in docs]
     rel_rev_intersect = [x for x in rels if x in retrieved]
     precision = []
@@ -23,12 +23,24 @@ def eval_map(docs,rel_docs):
     return 0
 
 def eval_r_precision(docs,rel_docs):
-    rels = [x for x in rel_docs]
+    rels = [str(int(x)) for x in rel_docs]
     retrieved = [x["id"] for x in docs]
     rel_rev_intersection = [x for x in rels if x in retrieved]
-    if len(retrieved) == 0:
+    if len(retrieved) <= 0:
         return 0
-    return len(rel_rev_intersection)/len(retrieved)
+    temp_len = len(rel_rev_intersection)
+    index = 0
+    count = 0
+    for item in range(len(retrieved)):
+        if count == temp_len:
+            index = item + 1
+            break
+        else:
+            if retrieved[item] in rel_rev_intersection:
+                count += 1
+    if index == 0:
+        return 0
+    return temp_len/index
 
 def split_query_text(is_stem,is_stopword,eval_list):
     query_text = get_file_data("query.text",".I")
@@ -64,13 +76,16 @@ def eval(is_stem,is_stopword):
     list_of_index = [x for x in rel_docs]
     queries = split_query_text(is_stem,is_stopword,list_of_index)
     count = 0
+    r_precision_sum = 0
+    map_precision_sum = 0
     for query in queries:
         temp_res = search(query["context"],is_stem,is_stopword)
         r_precision = eval_r_precision(temp_res,rel_docs[list_of_index[count]])
         map_precision = eval_map(temp_res,rel_docs[list_of_index[count]])
         count += 1
-        print("\033[1;32;40m ======================= \033[0;0m", file = stream)
-        print("\033[1;32;40m Query : \033[0;0m{}".format(query["context"]), file = stream)
-        print("R-Precision :\t\t\t{}".format(r_precision))
-        print("Mean average precision :\t{}".format(map_precision))
-#eval(True,True)
+        r_precision_sum += r_precision
+        map_precision_sum += map_precision
+    print("\033[1;32;40m =========== Summary =========== \033[0;0m", file = stream)
+    print("Average R-Precision :\t\t\t{}".format(r_precision_sum/len(queries)))
+    print("Average Mean average precision :\t{}".format(map_precision_sum/len(queries)))
+    print("\033[1;32;40m =============================== \033[0;0m", file = stream)

@@ -9,7 +9,7 @@ init(wrap=False)
 stream = AnsiToWin32(sys.stderr).stream
 # For installation
 # nltk.download()
-
+# Helper function 
 def write_to_file(filename, a_list):
   with open(filename, 'w') as fp:
     json.dump(a_list, fp)
@@ -28,7 +28,6 @@ def section_removal(data):
         new_data = []
         temp = (" .I" + index.replace(".T", "REMOVE_HERE .T").replace(".W", "REMOVE_HERE .W").replace(".B", "REMOVE_HERE .B").replace(
             ".A", "REMOVE_HERE .A").replace(".N", "REMOVE_HERE .N").replace(".X", "REMOVE_HERE .X").replace(".K", "REMOVE_HERE .K").replace(".C", "REMOVE_HERE .C")).split("REMOVE_HERE")
-        # print(temp, file=stream)
         for index in temp:
             if index[:3] in important_sections:
                 new_data.append(index)
@@ -38,7 +37,7 @@ def section_removal(data):
 def data_cleaner(data, is_stem, is_stopword):
     filtered_str = ""
     ps = PorterStemmer()
-    important_sections = [" .I", " .T", " .W", " .B", " .A"]
+    important_sections = [" .I", " .T", " .W"," .A"]
     common_words = [x.lower() for x in get_file_data("common_words", "\n")]
     for index in data:
         temp_lst = (" .I" + index.replace(".T", "REMOVE_HERE .T").replace(".W", "REMOVE_HERE .W").replace(".B", "REMOVE_HERE .B").replace(
@@ -48,7 +47,7 @@ def data_cleaner(data, is_stem, is_stopword):
             if index[:3] in important_sections:
                 temp_data.append(index)
         filtered_str += ' '.join(temp_data)
-    cleaned_str = re.sub(r'\W+', ' ', filtered_str).split(" ")
+    cleaned_str = re.sub('[^A-Za-z0-9]+', ' ', filtered_str).split(" ")
     lowered = [ps.stem(x.lower()) for x in cleaned_str if not x.isnumeric() and not x == ''] if is_stem else [
         x.lower() for x in cleaned_str if not x.isnumeric() and not x == '']
     no_num = [x for x in lowered if not bool(re.search(r'\d', x))]
@@ -87,10 +86,8 @@ def posting_list(data_input):
         temp_dict["title"] = section[3:].strip()
       if section[:3] == " .W":
         temp_dict["abstract"] = section[3:].strip()
-      if section[:3] == " .B":
-        temp_dict["date"] = temp_dict["date"] + " " + section[3:].strip() if "date" in temp_dict else section[3:].strip()
       if section[:3] == " .A":
-        temp_dict["authors"] = temp_dict["authors"] + " " + section[3:].strip() if "authors" in temp_dict else section[3:].strip()
+        temp_dict["authors"] = section[3:].strip()
     all_dict[index[0][3:].strip()] = temp_dict
   return all_dict
 
@@ -99,20 +96,25 @@ def format_posting_list(data_input,is_stem,is_stopword):
   stop_words = get_file_data("common_words"," ")[0].split(" ")
   ps = PorterStemmer()
   for key in data:
-    title = list(filter(None, [ x.lower() for x in re.sub(r'\W+', ' ',data[key]["title"]).split(" ") if not x.isnumeric()])) if "title" in data[key] else []
-    abstract = list(filter(None,[ x.lower() for x in re.sub(r'\W+', ' ',data[key]["abstract"]).split(" ") if not x.isnumeric()])) if "abstract" in data[key] else []
+    title = list(filter(None, [ x.lower() for x in re.sub('[^A-Za-z0-9]+',' ',data[key]["title"]).split(" ") if not x.isnumeric()])) if "title" in data[key] else []
+    abstract = list(filter(None,[ x.lower() for x in re.sub('[^A-Za-z0-9]+',' ',data[key]["abstract"]).split(" ") if not x.isnumeric()])) if "abstract" in data[key] else []
+    author = [x.lower() for x in re.sub('[^A-Za-z0-9]+',' ', data[key]["authors"]).split(" ") if not x.isnumeric() and not x == ''] if "authors" in data[key] else []
     words_pool= sorted(set(list(filter(None,(" ".join(title) + " " + " ".join(abstract)).split(" ")))))
     temp_title = []
     temp_abstract = []
     temp_word_pools = []
+    temp_author = []
     if is_stem:
       temp_title = [ps.stem(x) for x in title if x not in stop_words] if is_stopword else [ps.stem(x) for x in title]
       temp_abstract = [ps.stem(x) for x in abstract if x not in stop_words] if is_stopword else [ps.stem(x) for x in abstract]
       temp_word_pools = [ps.stem(x) for x in words_pool if x not in stop_words] if is_stopword else [ps.stem(x) for x in words_pool]
+      temp_author = [ps.stem(x) for x in author if x not in stop_words] if is_stopword else [ps.stem(x) for x in author]
     else:
       temp_title = title if not is_stopword else [x for x in title if x not in stop_words]
       temp_abstract = abstract if not is_stopword else [x for x in abstract if x not in stop_words]
       temp_word_pools = words_pool if not is_stopword else [x for x in words_pool if x not in stop_words]
+      temp_author = author if not is_stopword else [x for x in author if x not in stop_words]
+    temp_word_pools += temp_author
     data[key]["words_pool"] = temp_word_pools
     data_title_dict = dict()
     data_abstract_dict = dict()
@@ -132,15 +134,15 @@ def format_posting_list(data_input,is_stem,is_stopword):
     for i in unique_abstract:
       indices = [index for index, x in enumerate(temp_abstract) if x == i]
       data_abstract_dict[i] = [temp_abstract.count(i),indices]
-    data[key]["details_title"] = data_title_dict
-    data[key]["details_abstract"] = data_abstract_dict
     temp_count = dict()
     for word in temp_word_pools:
       count = 0
       if word in data_abstract_dict:
         count += data_abstract_dict[word][0]
-      if word in data_title_dict:
+      elif word in data_title_dict:
         count += data_title_dict[word][0]
+      else:
+        count+=1
       temp_count[word] = count
     data[key]["word_count"] = temp_count
   print("\033[1;32;40m.... Writing to list: Posting ....\033[0;0m", file=stream)
@@ -153,5 +155,3 @@ def main(is_stem,is_stopword):
   print("\033[1;32;40m.... Extracting file ....\033[0;0m", file=stream)
   data = get_file_data("cacm.all", ".I")
   format_posting_list(data,is_stem,is_stopword)
-
-#main(True,True)
