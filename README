@@ -1,0 +1,50 @@
+Name: Nguyen Hong Duc
+Student ID: 500910998
+
+Running the program:
+
+- To run the program:
+    - Install nltk
+    - In command prompt, type: python display.py (Make sure your python version is 3.8)
+    - All the program result will be display according to the given options
+
+Report:
+
+Objective: To understand Vector space model and gaining experience building a complete information retrieval system
+There will be 4 main programs that take place in the process of making the retrieval system:
+- invert
+- search
+- eval
+- display
+
+Invert program:
+Objective: To convert given data into sets of document for information retrieval.
+The program will pick up the given raw data files and execute data processing to clean up and get all given documents.
+There will be 3 files generated after running the program: 
+- posting_list - List will all the document, divided into each subsections, such as the title, abstract, data, author and customed
+sub-section such as words pool and word counter
+- dictionary - How many times a word occurred in all documents
+- lookup - containing all the information on which word occur in which document 
+These file will be used as the temporary data storage, storing related information to the retrieval system, such as a
+dictionary of words with their occurrence in the data, the closest position to the words and so on.
+
+Posting list is based on the document ID, however due to the structure of dictionary in python (Which is an implementation of 
+hashmap), the data will be retrieve with the runtime of O(n)
+To assist the data storage, all 3 files will be in JSON format. This would be easier to load and dissect the context within it.
+
+Search program:
+Based on the Vector space model. There will be 3 main procedure occered in the process of searching:
+- Retrieve relevant documents (Using all 3 created files)
+- Calculation
+- Ranking based on cosine similarity
+
+The program will return the id of relevant documents. The method of finding is to get all documents that has similar terms within its context.
+
+Evaluation program:
+There will be 2 main evaluation, one is R-Precision, the other is Mean average precision.
+R-Precision: Because some queries will return a huge amount of data, the program will be fixed base on how many relevant documents occur
+MAP: Will be calculated normally based on found documents
+
+Display program:
+It will display all the previous program on demand. Setting could also be changed based on user's desire, such as not using stem or not using stop word removal
+

@@ -83,15 +83,9 @@ def eval(is_stem,is_stopword):
         r_precision = eval_r_precision(temp_res,rel_docs[list_of_index[count]])
         map_precision = eval_map(temp_res,rel_docs[list_of_index[count]])
         count += 1
-        print("\033[1;32;40m ======================= \033[0;0m", file = stream)
-        print("\033[1;32;40m Query : \033[0;0m{}".format(query["context"]), file = stream)
-        print("R-Precision :\t\t\t{}".format(r_precision))
-        print("Mean average precision :\t{}".format(map_precision))
         r_precision_sum += r_precision
         map_precision_sum += map_precision
     print("\033[1;32;40m =========== Summary =========== \033[0;0m", file = stream)
     print("Average R-Precision :\t\t\t{}".format(r_precision_sum/len(queries)))
     print("Average Mean average precision :\t{}".format(map_precision_sum/len(queries)))
     print("\033[1;32;40m =============================== \033[0;0m", file = stream)
-
-eval(True,True)

@@ -9,7 +9,7 @@ init(wrap=False)
 stream = AnsiToWin32(sys.stderr).stream
 # For installation
 # nltk.download()
-
+# Helper function 
 def write_to_file(filename, a_list):
   with open(filename, 'w') as fp:
     json.dump(a_list, fp)

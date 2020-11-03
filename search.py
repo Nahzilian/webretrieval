@@ -117,12 +117,10 @@ def single_term_dict(query,docs,is_stem,is_stopwords):
             retrieved_docs.append(temp_dict)
     return retrieved_docs
 
-
 def search(query,is_stem,is_stopwords):
     temp_query = [x for x in query.split(" ") if not x == '']
     if len(temp_query) > 1:
         unfiltered = query_filtering(temp_query,is_stem,is_stopwords)
-        print(unfiltered)
         query_words = sorted(set(unfiltered))
         doc_id = relavance_doc_retrieval(query_words)
         return doc_ranking(sorted(set(doc_id)),doc_list,query_words,unfiltered)

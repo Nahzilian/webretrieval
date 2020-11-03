@@ -98,7 +98,7 @@ while(True):
             sys.stdout.write('\b')
         clear()
     elif inp == "eval":
-        print("\033[1;32;40m === List of queries and evaluation === \033[0;0m", file = stream)
+        print("\033[1;32;40m ================= Loading ================= \033[0;0m")
         eval(is_stem,is_stopwords)
     elif inp == "cls" or inp == "clear":
         clear()
