@@ -26,9 +26,21 @@ def eval_r_precision(docs,rel_docs):
     rels = [str(int(x)) for x in rel_docs]
     retrieved = [x["id"] for x in docs]
     rel_rev_intersection = [x for x in rels if x in retrieved]
-    if len(retrieved) == 0:
+    if len(retrieved) <= 0:
         return 0
-    return len(rel_rev_intersection)/len(retrieved)
+    temp_len = len(rel_rev_intersection)
+    index = 0
+    count = 0
+    for item in range(len(retrieved)):
+        if count == temp_len:
+            index = item + 1
+            break
+        else:
+            if retrieved[item] in rel_rev_intersection:
+                count += 1
+    if index == 0:
+        return 0
+    return temp_len/index
 
 def split_query_text(is_stem,is_stopword,eval_list):
     query_text = get_file_data("query.text",".I")
@@ -81,4 +93,5 @@ def eval(is_stem,is_stopword):
     print("Average R-Precision :\t\t\t{}".format(r_precision_sum/len(queries)))
     print("Average Mean average precision :\t{}".format(map_precision_sum/len(queries)))
     print("\033[1;32;40m =============================== \033[0;0m", file = stream)
-#eval(True,True)
+
+eval(True,True)

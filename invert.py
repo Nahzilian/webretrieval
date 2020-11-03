@@ -155,6 +155,3 @@ def main(is_stem,is_stopword):
   print("\033[1;32;40m.... Extracting file ....\033[0;0m", file=stream)
   data = get_file_data("cacm.all", ".I")
   format_posting_list(data,is_stem,is_stopword)
-
-
-main(True,True)

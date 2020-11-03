@@ -44,6 +44,10 @@ def doc_ranking(docs_id,data,query_words,original_query):
         temp_wp += [x for x in data[key]["words_pool"]]
     words_pool = [x for x in temp_wp if x in word_dict]
     words_pool += query_words
+    unique = sorted(set(words_pool))
+    doc_freq = dict()
+    for word in unique:
+        doc_freq[word] = words_pool.count(word)
     words_pool = sorted(set(words_pool))
     for key in docs_id:
         temp_dict = dict()
@@ -53,7 +57,8 @@ def doc_ranking(docs_id,data,query_words,original_query):
             if not word in temp_dict["word_list"]:
                 temp_dict["word_list"][word] = 0
         rel_collection.append(temp_dict)
-    idf = inverse_doc_freq(len(rel_collection),words_pool,word_dict)
+    #Found all the frequency of all words
+    idf = inverse_doc_freq(len(rel_collection),words_pool,doc_freq)
     for item in rel_collection:
         for key in idf:
             if not item["word_list"][key] <= 0:
@@ -77,10 +82,10 @@ def query_vector(query_words,idf_collection,words_pool):
     return result
 
 # finding idf
-def inverse_doc_freq(collection_len,words_pool,word_dict): 
+def inverse_doc_freq(collection_len,words_pool,doc_freq): 
     idf = dict()
     for word in words_pool:
-        idf[word] = math.log(collection_len/word_dict[word],10) if collection_len > 0 else 0
+        idf[word] = math.log(collection_len/doc_freq[word],10) if collection_len > 0 else 0
     return idf
 
 def vector_length(vector):
@@ -123,7 +128,3 @@ def search(query,is_stem,is_stopwords):
         return doc_ranking(sorted(set(doc_id)),doc_list,query_words,unfiltered)
     else:
         return single_term_dict(temp_query[0],doc_list,is_stem,is_stopwords)
-    
-
-
-
