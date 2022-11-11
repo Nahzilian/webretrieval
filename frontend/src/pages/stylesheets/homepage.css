@@ -1,0 +1,24 @@
+.homepage {
+    width: 100vw;
+    height: 100vh;
+    position: relative;
+    display: grid;
+    place-content: center;
+}
+
+.homepage.result {
+    place-content: start;
+    justify-items: center;
+}
+
+.search-box-wrapper {
+    text-align: center;
+}
+
+.search-box-wrapper.result {
+    width: 100%;
+}
+
+.search-box-wrapper h1{
+    font-size: 30pt;
+}
