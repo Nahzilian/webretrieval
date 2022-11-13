@@ -5,25 +5,31 @@ import useQuery from '../hooks/useQuery'
 import { queryData } from '../api/search'
 import { useNavigate, useLocation } from 'react-router-dom'
 import Card from '../components/Card'
+import Pagination from '../components/Pagination'
 import './stylesheets/homepage.css'
 
 const defaultPlaceholder = [
-    "Some input 1",
-    "Some input 2",
-    "Some input 3",
-    "Some input 4",
+    "How to be top G?",
+    "How to make tikka masala?",
+    "Software development",
+    "How to get good at games?",
 ]
+
+const pagination = {
+    currentPage: 0,
+    totalPages: 20,
+}
 
 const Homepage = () => {
     const query = useQuery()
     const navigate = useNavigate()
     const { state } = useLocation()
     const [displayResult, setDisplayResult] = useState(false)
+    const [searchResult, setSearchResult] = useState([])
     const [searchBar, setSearchBar] = useState({
         placeholder: defaultPlaceholder[0],
         value: ""
     })
-    const [searchResult, setSearchResult] = useState([])
 
     useInterval(() => {
         let randomIndex = Math.floor(Math.random() * defaultPlaceholder.length)
@@ -38,8 +44,8 @@ const Homepage = () => {
             if (data && data.length && data.length > 0)
                 setSearchResult(data)
             else
-                if (query)
-                    queryData(query).then((res) => setSearchResult(res.data))
+                if (pageQuery)
+                    queryData(pageQuery).then((res) => setSearchResult(res.data))
 
         }
         if (pageQuery) {
@@ -51,10 +57,22 @@ const Homepage = () => {
     // Form actions
 
     const onSubmit = () => {
-        const query = {
+        const pageQuery = {
             query: searchBar.value
         }
-        queryData(query).then((res) => navigate(`/?q=${searchBar.value}`, { state: { data: res.data } }))
+        queryData(pageQuery).then((res) => navigate(`/?q=${searchBar.value}`, { state: { data: res.data } }))
+    }
+
+    const onPageChange = (pageSetting) => {
+        const { currentPage } = pageSetting
+        const pageQuery = {
+            query: searchBar.value,
+            page: currentPage
+        }
+        queryData(pageQuery).then((res) => {
+            setSearchResult(res.data)
+        })
+        // setPagination(page)
     }
 
     const onChange = (e) => setSearchBar(prev => ({ ...prev, value: e.target.value }))
@@ -71,16 +89,17 @@ const Homepage = () => {
                         onSubmit={onSubmit}
                     />
                 </div>
-                <div>
-                    {searchResult.length > 0 && searchResult.map((item, key) => <Card key={key} {...item}/>)}
-                </div>
+                {searchResult.length > 0 &&
+                    searchResult.map((item, key) =>
+                        <Card key={key} {...item} />)}
+                <Pagination pageSetting={pagination} callback={onPageChange} />
             </section>
         )
 
     return (
         <section className="homepage">
             <div className='search-box-wrapper'>
-                <h1>Some text</h1>
+                <h1>Queria</h1>
                 <SearchBar
                     {...searchBar}
                     onChange={onChange}

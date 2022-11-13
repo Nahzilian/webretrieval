@@ -1,9 +1,10 @@
 .homepage {
-    width: 100vw;
     height: 100vh;
     position: relative;
     display: grid;
     place-content: center;
+    padding: 0 70px;
+    padding-bottom: 20px;
 }
 
 .homepage.result {

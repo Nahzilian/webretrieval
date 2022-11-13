@@ -1,0 +1,29 @@
+.pagination-wrapper {
+    width: 100%;
+    position: relative;
+}
+
+.pagination {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    gap: 15px;
+    font-size: 15pt;
+    align-items: center;
+    justify-content: center;
+    margin: 10px 0;
+}
+
+.pagination-item {
+    min-width: 20px;
+    min-height: 20px;
+    text-align: center;
+    padding: 5px;
+    border: 2px solid #DEEFB7;
+    border-radius: 5px;
+}
+.pagination-item.active, 
+.pagination-item:hover {
+    background-color: #DEEFB7;
+    color: #414288;
+}

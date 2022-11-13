@@ -1,6 +1,30 @@
 .card-wrapper {
-    border: 1px solid black;
-    padding: 10px;
-    margin: 10px;
+    border: 2px solid #DEEFB7;
+    margin: 10px 20px;
+}
+
+.card {
+    padding: 10px 20px;
     border-radius: 5px;
+    font-size: 18pt;
+}
+
+.card-body {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.card-title {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.card-icons {
+    display: flex;
+    flex-direction: row;
+    gap: 10px
 }

@@ -20,8 +20,7 @@ const SearchBar = (props) => {
                 value={value}
                 onChange={onChange}
                 placeholder={placeholder} />
-
-            <i className={`fa-regular fa-magnifying-glass-arrow-right search-icon ${minimize ? 'minimize' : ''}`}
+            <i className={`fa-solid fa-magnifying-glass search-icon ${minimize ? 'minimize' : ''}`}
                 style={{ fontSize: 40 }} />
         </form>);
 }
